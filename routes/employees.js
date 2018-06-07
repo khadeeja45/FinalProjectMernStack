@@ -4,29 +4,53 @@ const { auth } = require("../middle_wares/auth.js");
 const User = require("../models/user.js"),
     Leave = require("../models/leaves.js");
 
+
+router.get("/", auth, (req, res) => {
+    let leaves = Leave.findOne({ email: req.user.email }, (err, foundLeaves) => {
+        if (err) throw err;
+        return foundLeaves;
+    });
+    console.log(leaves);
+    let dataToSend = {
+        isAuth: true,
+        id: req.user._id,
+        name: req.user.name,
+
+    }
+    res.json(dataToSend);
+});
+
 router.get("/register", (req, res) => {
     res.render("employee/register");
 });
 
 
 router.post("/register", (req, res) => {
-    const user = new User({
-        email: req.body.email,
-        password: req.body.password,
-        isAdmin: false,
-        isEmployee: true
-    });
-
-
-    user.save((err, createdUser) => {
-        if (err) {
-            console.log(err);
-            return res.status(400).send(err);
-
-        }
-        res.status(200).send({ message: "Successfully registered" });
+    User.findOne({email:"ATIYA@GMAIL.COM"}, (err, foundUser)=> {
+        if(err) res.send(err);
+        if(foundUser){
+            res.json({message:"user already exists"});
+        } 
+        const user = new User({
+                        email: req.body.email,
+                        password: req.body.password,
+                        isAdmin: false,
+                        isEmployee: true,
+                        name: req.body.name,
+                        department: req.body.department
+                    });
+                
+                
+                    user.save((err, createdUser) => {
+                        if (err) {
+                            console.log(err);
+                            return res.status(400).send(err);
+                
+                        }
+                        res.json({addEmployee:createdUser });
+                    })
+                
     })
-
 });
 
 

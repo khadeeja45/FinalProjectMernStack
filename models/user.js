@@ -6,7 +6,6 @@ const SALT_I = 10;
 var userSchema = new mongoose.Schema({
     email: String,
     password: String,
-    name: String,
     token: {
         type: String
     },
@@ -18,7 +17,9 @@ var userSchema = new mongoose.Schema({
             ref: "Leave"
         }
 
-    }
+    },
+    department: String,
+    name:String
 
 
 });
@@ -57,6 +58,7 @@ userSchema.methods.generateToken = function(cb) {
 
     });
 }
+
 userSchema.statics.findByToken = function(token, cb) {
     var user = this;
     jwt.verify(token, "supersceret", function(err, decode) {
